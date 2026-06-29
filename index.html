@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Management</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ========== PARTICLE CANVAS ========== -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- ========== SPLASH / LOADING ========== -->
+  <div id="splashScreen" class="splash active">
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <div class="splash-cube">
+          <div class="cube-face front">S</div>
+          <div class="cube-face back">M</div>
+          <div class="cube-face right">📦</div>
+          <div class="cube-face left">📊</div>
+          <div class="cube-face top">🏪</div>
+          <div class="cube-face bottom">💰</div>
+        </div>
+      </div>
+      <h1 class="splash-title">Stock<span>Management</span></h1>
+      <p class="splash-sub">Powering Every Business, One Stock at a Time</p>
+      <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ========== AUTH SCREEN ========== -->
+  <div id="authScreen" class="screen">
+    <div class="auth-container glass-card">
+      <div class="auth-header">
+        <div class="auth-icon">🔐</div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to manage your stock</p>
+      </div>
+      <form id="loginForm" class="auth-form">
+        <div class="input-group">
+          <label>Business Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input type="email" id="loginEmail" placeholder="you@business.com" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔑</span>
+            <input type="password" id="loginPassword" placeholder="••••••••" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-ripple btn-glow">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+      </form>
+      <div class="auth-divider"><span>OR</span></div>
+      <form id="registerForm" class="auth-form hidden">
+        <div class="input-group">
+          <label>Business Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏢</span>
+            <input type="text" id="regBusiness" placeholder="My Awesome Store" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Business Type</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏷️</span>
+            <select id="regBizType" required>
+              <option value="">Select type...</option>
+              <option value="liquor_store">🍷 Liquor Store</option>
+              <option value="tuck_shop">🏪 Tuck Shop / Spaza</option>
+              <option value="salon">💇 Salon / Barbershop</option>
+              <option value="grocery">🛒 Grocery Store</option>
+              <option value="clothing">👗 Clothing Store</option>
+              <option value="electronics">📱 Electronics</option>
+              <option value="pharmacy">💊 Pharmacy</option>
+              <option value="hardware">🔧 Hardware Store</option>
+              <option value="restaurant">🍽️ Restaurant / Food</option>
+              <option value="service">🛠️ Service Business</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input type="email" id="regEmail" placeholder="you@business.com" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔑</span>
+            <input type="password" id="regPassword" placeholder="Min 8 characters" required minlength="8" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-ripple btn-glow">
+          <span class="btn-text">Create Account</span>
+        </button>
+      </form>
+      <div class="auth-toggle">
+        <span id="toggleAuthText">Don't have an account?</span>
+        <button id="toggleAuthBtn" class="btn-link">Register</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MAIN APP ========== -->
+  <div id="appScreen" class="screen hidden">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">S<span>M</span></div>
+        <span class="sidebar-brand">StockMgmt</span>
+        <button id="sidebarClose" class="sidebar-close-btn">✕</button>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="stock">
+          <span class="nav-icon">📦</span><span class="nav-label">Add Stock</span>
+        </button>
+        <button class="nav-item" data-page="inventory">
+          <span class="nav-icon">🗄️</span><span class="nav-label">Inventory</span>
+        </button>
+        <button class="nav-item" data-page="sales">
+          <span class="nav-icon">💰</span><span class="nav-label">Sales Tracker</span>
+        </button>
+        <button class="nav-item" data-page="reports">
+          <span class="nav-icon">📈</span><span class="nav-label">Reports</span>
+        </button>
+        <button class="nav-item" data-page="notifications">
+          <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
+          <span id="notifBadge" class="badge hidden">0</span>
+        </button>
+        <button class="nav-item" data-page="settings">
+          <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="nav-item">
+          <span class="nav-icon">🚪</span><span class="nav-label">Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MOBILE TOP BAR -->
+    <header class="topbar">
+      <button id="menuBtn" class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar-title">Stock<span>Management</span></div>
+      <div class="topbar-right">
+        <button id="topbarNotifBtn" class="icon-btn">
+          🔔
+          <span id="topbarNotifBadge" class="badge-dot hidden"></span>
+        </button>
+        <div class="avatar" id="topbarAvatar">U</div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="mainContent" class="main-content">
+
+      <!-- ===== DASHBOARD PAGE ===== -->
+      <section id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Dashboard</h1>
+          <p class="page-subtitle animate-in delay-1">Overview of your business</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid animate-in delay-2">
+          <div class="stat-card glass-card" data-color="blue">
+            <div class="stat-icon-wrap"><span class="stat-icon">📦</span></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTotalStock">0</span>
+              <span class="stat-label">Total Products</span>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card glass-card" data-color="green">
+            <div class="stat-icon-wrap"><span class="stat-icon">💵</span></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTodayRevenue">$0</span>
+              <span class="stat-label">Today's Revenue</span>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card glass-card" data-color="orange">
+            <div class="stat-icon-wrap"><span class="stat-icon">🛒</span></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statItemsSold">0</span>
+              <span class="stat-label">Items Sold Today</span>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+          <div class="stat-card glass-card" data-color="red">
+            <div class="stat-icon-wrap"><span class="stat-icon">⚠️</span></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statLowStock">0</span>
+              <span class="stat-label">Low Stock Alerts</span>
+            </div>
+            <div class="stat-glow"></div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid animate-in delay-3">
+          <!-- Recent Activity -->
+          <div class="glass-card dash-card">
+            <h3 class="card-title">📋 Recent Activity</h3>
+            <div id="recentActivity" class="activity-list">
+              <p class="empty-state">No recent activity</p>
+            </div>
+          </div>
+
+          <!-- Low Stock Warning -->
+          <div class="glass-card dash-card">
+            <h3 class="card-title">🚨 Low Stock Warnings</h3>
+            <div id="lowStockList" class="activity-list">
+              <p class="empty-state">All stock levels healthy</p>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="glass-card dash-card">
+            <h3 class="card-title">⚡ Quick Actions</h3>
+            <div class="quick-actions">
+              <button class="quick-action-btn" data-action="addStock">
+                <span class="qa-icon">➕</span> Add New Stock
+              </button>
+              <button class="quick-action-btn" data-action="recordSale">
+                <span class="qa-icon">💰</span> Record Sale
+              </button>
+              <button class="quick-action-btn" data-action="viewReports">
+                <span class="qa-icon">📈</span> View Reports
+              </button>
+              <button class="quick-action-btn" data-action="restock">
+                <span class="qa-icon">🔄</span> Restock Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ADD STOCK PAGE ===== -->
+      <section id="page-stock" class="page">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Add Stock</h1>
+          <p class="page-subtitle animate-in delay-1">Record new stock purchases</p>
+        </div>
+
+        <form id="stockForm" class="glass-card form-card animate-in delay-2">
+          <div class="form-section">
+            <h3 class="form-section-title">📦 Product Information</h3>
+            <div class="form-grid">
+              <div class="input-group">
+                <label>Product Name *</label>
+                <input type="text" id="stockName" placeholder="e.g., Castle Lager" required />
+              </div>
+              <div class="input-group">
+                <label>Brand</label>
+                <input type="text" id="stockBrand" placeholder="e.g., SAB" />
+              </div>
+              <div class="input-group">
+                <label>Category *</label>
+                <select id="stockCategory" required>
+                  <option value="">Select category...</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label>Size / Unit</label>
+                <input type="text" id="stockSize" placeholder="e.g., 500ml, 1kg, Large" />
+              </div>
+              <div class="input-group">
+                <label>SKU / Barcode</label>
+                <input type="text" id="stockSKU" placeholder="Optional SKU" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section-title">💲 Pricing & Quantity</h3>
+            <div class="form-grid">
+              <div class="input-group">
+                <label>Cost Price (per unit) *</label>
+                <input type="number" id="stockCostPrice" step="0.01" min="0" placeholder="0.00" required />
+              </div>
+              <div class="input-group">
+                <label>Selling Price (per unit) *</label>
+                <input type="number" id="stockSellPrice" step="0.01" min="0" placeholder="0.00" required />
+              </div>
+              <div class="input-group">
+                <label>Quantity Purchased *</label>
+                <input type="number" id="stockQty" min="1" placeholder="0" required />
+              </div>
+              <div class="input-group">
+                <label>Discount Received (%)</label>
+                <input type="number" id="stockDiscount" step="0.01" min="0" max="100" placeholder="0" value="0" />
+              </div>
+              <div class="input-group">
+                <label>Previous Stock Remaining</label>
+                <input type="number" id="stockPrevious" min="0" placeholder="0" value="0" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section-title">🚚 Purchase Details</h3>
+            <div class="form-grid">
+              <div class="input-group">
+                <label>Supplier / Store Bought From *</label>
+                <input type="text" id="stockSupplier" placeholder="e.g., Makro, Local Distributor" required />
+              </div>
+              <div class="input-group">
+                <label>Purchase Date</label>
+                <input type="date" id="stockDate" />
+              </div>
+              <div class="input-group">
+                <label>Transport Cost (Going) *</label>
+                <input type="number" id="stockTransGo" step="0.01" min="0" placeholder="0.00" required />
+              </div>
+              <div class="input-group">
+                <label>Transport Cost (Return) *</label>
+                <input type="number" id="stockTransReturn" step="0.01" min="0" placeholder="0.00" required />
+              </div>
+              <div class="input-group full-width">
+                <label>Notes</label>
+                <textarea id="stockNotes" placeholder="Any additional notes..." rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cost Summary -->
+          <div class="form-section cost-summary glass-card-inner">
+            <h3 class="form-section-title">🧮 Cost Summary</h3>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>Subtotal:</span>
+                <span id="sumSubtotal">$0.00</span>
+              </div>
+              <div class="summary-item">
+                <span>Discount:</span>
+                <span id="sumDiscount">-$0.00</span>
+              </div>
+              <div class="summary-item">
+                <span>Transport (Total):</span>
+                <span id="sumTransport">$0.00</span>
+              </div>
+              <div class="summary-item total">
+                <span>Total Cost:</span>
+                <span id="sumTotal">$0.00</span>
+              </div>
+              <div class="summary-item total">
+                <span>Cost Per Unit (incl. transport):</span>
+                <span id="sumPerUnit">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-ripple btn-glow btn-full">
+            <span class="btn-text">💾 Save Stock Entry</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- ===== INVENTORY PAGE ===== -->
+      <section id="page-inventory" class="page">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Inventory</h1>
+          <p class="page-subtitle animate-in delay-1">All your stock at a glance</p>
+        </div>
+
+        <div class="toolbar glass-card animate-in delay-1">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="inventorySearch" placeholder="Search products..." />
+          </div>
+          <div class="filter-group">
+            <select id="filterCategory" class="filter-select">
+              <option value="">All Categories</option>
+            </select>
+            <select id="filterBrand" class="filter-select">
+              <option value="">All Brands</option>
+            </select>
+            <select id="filterStatus" class="filter-select">
+              <option value="">All Status</option>
+              <option value="in_stock">In Stock</option>
+              <option value="low_stock">Low Stock</option>
+              <option value="out_of_stock">Out of Stock</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="grid" title="Grid View">▦</button>
+            <button class="view-btn" data-view="list" title="List View">☰</button>
+          </div>
+        </div>
+
+        <div id="inventoryGrid" class="inventory-grid animate-in delay-2">
+          <p class="empty-state">No inventory yet. Add some stock!</p>
+        </div>
+      </section>
+
+      <!-- ===== SALES TRACKER PAGE ===== -->
+      <section id="page-sales" class="page">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Sales Tracker</h1>
+          <p class="page-subtitle animate-in delay-1">Record daily sales</p>
+        </div>
+
+        <div class="sales-header glass-card animate-in delay-1">
+          <div class="input-group inline">
+            <label>Sale Date</label>
+            <input type="date" id="saleDate" />
+          </div>
+          <div class="sales-totals">
+            <div class="sale-total-item">
+              <span class="sale-total-label">Items Sold:</span>
+              <span class="sale-total-value" id="saleTotalItems">0</span>
+            </div>
+            <div class="sale-total-item">
+              <span class="sale-total-label">Revenue:</span>
+              <span class="sale-total-value highlight" id="saleTotalRevenue">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="salesProductList" class="sales-list animate-in delay-2">
+          <p class="empty-state">Add stock first, then record sales here</p>
+        </div>
+
+        <button id="submitSalesBtn" class="btn btn-primary btn-ripple btn-glow btn-full animate-in delay-3 hidden">
+          <span class="btn-text">✅ Submit Day's Sales</span>
+        </button>
+      </section>
+
+      <!-- ===== REPORTS PAGE ===== -->
+      <section id="page-reports" class="page">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Reports</h1>
+          <p class="page-subtitle animate-in delay-1">Business insights and analytics</p>
+        </div>
+
+        <div class="toolbar glass-card animate-in delay-1">
+          <div class="filter-group">
+            <select id="reportPeriod" class="filter-select">
+              <option value="today">Today</option>
+              <option value="week" selected>This Week</option>
+              <option value="month">This Month</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="reports-grid animate-in delay-2">
+          <div class="glass-card report-card">
+            <h3>💰 Revenue Summary</h3>
+            <div class="report-big-number" id="reportRevenue">$0.00</div>
+            <div class="report-sub">Total revenue for period</div>
+          </div>
+          <div class="glass-card report-card">
+            <h3>📦 Products Sold</h3>
+            <div class="report-big-number" id="reportSold">0</div>
+            <div class="report-sub">Units sold this period</div>
+          </div>
+          <div class="glass-card report-card">
+            <h3>📊 Profit Estimate</h3>
+            <div class="report-big-number" id="reportProfit">$0.00</div>
+            <div class="report-sub">Revenue minus cost</div>
+          </div>
+          <div class="glass-card report-card">
+            <h3>🚚 Transport Costs</h3>
+            <div class="report-big-number" id="reportTransport">$0.00</div>
+            <div class="report-sub">Total transport spent</div>
+          </div>
+        </div>
+
+        <div class="glass-card animate-in delay-3" style="margin-top:1.5rem;">
+          <h3 class="card-title">📋 Sales History</h3>
+          <div id="salesHistory" class="activity-list">
+            <p class="empty-state">No sales recorded yet</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== NOTIFICATIONS PAGE ===== -->
+      <section id="page-notifications" class="page">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Notifications</h1>
+          <p class="page-subtitle animate-in delay-1">Restock alerts and updates</p>
+        </div>
+
+        <div class="glass-card animate-in delay-1" style="margin-bottom:1.5rem;">
+          <h3 class="card-title">⏰ Notification Schedule</h3>
+          <div class="form-grid" style="margin-top:1rem;">
+            <div class="input-group">
+              <label>Restock Reminder Frequency</label>
+              <select id="notifFrequency">
+                <option value="daily">Daily</option>
+                <option value="weekly" selected>Weekly</option>
+                <option value="biweekly">Every 15 Days</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Low Stock Threshold</label>
+              <input type="number" id="lowStockThreshold" min="1" value="5" />
+            </div>
+          </div>
+          <button id="saveNotifSettings" class="btn btn-primary btn-ripple" style="margin-top:1rem;">Save Settings</button>
+        </div>
+
+        <div id="notificationsList" class="notifications-list animate-in delay-2">
+          <p class="empty-state">No notifications yet</p>
+        </div>
+      </section>
+
+      <!-- ===== SETTINGS PAGE ===== -->
+      <section id="page-settings" class="page">
+        <div class="page-header">
+          <h1 class="page-title animate-in">Settings</h1>
+          <p class="page-subtitle animate-in delay-1">Configure your business profile</p>
+        </div>
+
+        <div class="glass-card form-card animate-in delay-1">
+          <h3 class="form-section-title">🏢 Business Profile</h3>
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Business Name</label>
+              <input type="text" id="settBusinessName" placeholder="My Business" />
+            </div>
+            <div class="input-group">
+              <label>Business Type</label>
+              <select id="settBizType">
+                <option value="liquor_store">🍷 Liquor Store</option>
+                <option value="tuck_shop">🏪 Tuck Shop / Spaza</option>
+                <option value="salon">💇 Salon / Barbershop</option>
+                <option value="grocery">🛒 Grocery Store</option>
+                <option value="clothing">👗 Clothing Store</option>
+                <option value="electronics">📱 Electronics</option>
+                <option value="pharmacy">💊 Pharmacy</option>
+                <option value="hardware">🔧 Hardware Store</option>
+                <option value="restaurant">🍽️ Restaurant / Food</option>
+                <option value="service">🛠️ Service Business</option>
+                <option value="other">📦 Other</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Currency Symbol</label>
+              <input type="text" id="settCurrency" placeholder="$" maxlength="3" value="$" />
+            </div>
+            <div class="input-group">
+              <label>Update Frequency</label>
+              <select id="settUpdateFreq">
+                <option value="daily">Daily</option>
+                <option value="weekly" selected>Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
+          <button id="saveSettings" class="btn btn-primary btn-ripple btn-glow" style="margin-top:1.5rem;">
+            <span class="btn-text">💾 Save Settings</span>
+          </button>
+        </div>
+
+        <div class="glass-card form-card animate-in delay-2" style="margin-top:1.5rem;">
+          <h3 class="form-section-title">🗑️ Danger Zone</h3>
+          <p style="color:var(--text-secondary);margin-bottom:1rem;">Clear all data. This cannot be undone.</p>
+          <button id="clearAllData" class="btn btn-danger btn-ripple">Clear All Data</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ========== TOAST CONTAINER ========== -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ========== MODAL ========== -->
+  <div id="modal" class="modal-overlay hidden">
+    <div class="modal-content glass-card">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
