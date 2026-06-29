@@ -1,11 +1,14 @@
 {
   "name": "stock-management-api",
   "version": "1.0.0",
-  "description": "Stock Management Cloudflare Worker",
+  "description": "Stock Management Cloudflare Worker with D1",
   "main": "worker.js",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create auth-db",
+    "db:execute": "wrangler d1 execute auth-db --file=schema.sql",
+    "db:shell": "wrangler d1 execute auth-db --console"
   },
   "devDependencies": {
     "wrangler": "^3.99.0"
