@@ -4,7 +4,7 @@
 
 // ==================== CONFIGURATION ====================
 const CONFIG = {
-  API_URL: 'https://dataworker.mzaybus.workers.dev/', 
+  API_URL: 'https://dataworker.mzaybus.workers.dev', 
   STORAGE_KEY: 'stock_mgmt_data',
   SYNC_INTERVAL: 30000, // Sync every 30 seconds
 };
