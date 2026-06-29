@@ -6,7 +6,7 @@ compatibility_date = "2024-09-25"
 [[d1_databases]]
 binding = "DB"
 database_name = "auth-db"
-database_id = "YOUR_D1_DATABASE_ID_HERE"
+database_id = "07b8dd2d-fa3d-4272-b457-c353801367c7"
 
 # Cron Triggers for Notifications
 [triggers]
